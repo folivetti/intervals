@@ -528,7 +528,7 @@ instance (Fractional a, Ord a) => Fractional (Interval a) where
   _ / Empty = Empty
   x / y@(I a b)
     | 0 `notElem` y = divNonZero x y
-    | iz && sz  = Exception.throw DivideByZero
+    | iz && sz  = whole
     | iz        = divPositive x b
     |       sz  = divNegative x a
     | otherwise = divZero x
