@@ -346,9 +346,9 @@ instance (Num a, Ord a) => Num (Interval a) where
   _ - _ = Empty
   {-# INLINE (-) #-}
   I a b * I a' b' =
-    minimum [a * a', a * b', b * a', b * b']
-    ...
-    maximum [a * a', a * b', b * a', b * b']
+    case filter (not . isNaN) [a * a', a * b', b * a', b * b'] of
+      [] -> Empty
+      xs -> minimum xs ... maximum xs
   _ * _ = Empty
   {-# INLINE (*) #-}
   abs x@(I a b)
