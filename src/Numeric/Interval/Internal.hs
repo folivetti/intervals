@@ -535,8 +535,7 @@ instance (Fractional a, Ord a) => Fractional (Interval a) where
     where
       iz = a == 0
       sz = b == 0
-  recip Empty = Empty
-  recip (I a b)   = on min recip a b ... on max recip a b
+  recip = (1 /)
   {-# INLINE recip #-}
   fromRational r  = let r' = fromRational r in I r' r'
   {-# INLINE fromRational #-}
@@ -682,7 +681,21 @@ instance RealFloat a => RealFloat (Interval a) where
 
   atan2 = error "unimplemented"
 
--- TODO: (^), (^^) to give tighter bounds
+  x ^ y | y < 0    = errorWithoutStackTrace "Negative exponent"
+        | y == 0   = (1 ... 1)
+        | even y = intersection (0 ... posInfinity) (f x0 y0)
+        | otherwise = f x0 y0
+    where -- f : x0 ^ y0 = x ^ y
+          f x y | even y    = f (x * x) (y `quot` 2)
+                | y == 1    = x
+                | otherwise = g (x * x) (y `quot` 2) x
+          -- g : x0 ^ y0 = (x ^ y) * z
+          g x y z | even y = g (x * x) (y `quot` 2) z
+                  | y == 1 = x * z
+                  | otherwise = g (x * x) (y `quot` 2) (x * z)
+
+  x ^^ y | y < 0 = recip (x ^ negate y)
+         | otherwise = x ^ y
 
 -- | Calculate the intersection of two intervals.
 --
