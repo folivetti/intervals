@@ -686,6 +686,7 @@ instance RealFloat a => RealFloat (Interval a) where
 
   atan2 = error "unimplemented"
 
+(^) :: (Fractional a1, Ord a1, Integral a2) => Interval a1 -> a2 -> Interval a1
 x0 ^ y0 | y0 < 0    = errorWithoutStackTrace "Negative exponent"
         | y0 == 0   = (1 ... 1)
         | even y0   = intersection (0 ... posInfinity) (f x0 y0)
@@ -699,6 +700,7 @@ x0 ^ y0 | y0 < 0    = errorWithoutStackTrace "Negative exponent"
                 | y == 1 = x * z
                 | otherwise = g (x * x) (y `quot` 2) (x * z)
 
+(^^) :: (Fractional a1, Ord a1, Integral a2) => Interval a1 -> a2 -> Interval a1
 x ^^ y | y < 0 = recip (x ^ negate y)
        | otherwise = x ^ y
 
