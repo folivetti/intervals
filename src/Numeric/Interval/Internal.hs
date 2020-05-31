@@ -54,16 +54,19 @@ module Numeric.Interval.Internal
   , irem
   , idiv
   , imod
+  , (^^)
+  , (^)
   ) where
 
 import Control.Exception as Exception
 import Data.Data
 import Data.Function (on)
+import Data.Maybe (mapMaybe)
 #if __GLASGOW_HASKELL__ >= 704
 import GHC.Generics
 #endif
 import Numeric.Interval.Exception
-import Prelude hiding (null, elem, notElem)
+import Prelude hiding (null, elem, notElem, (^), (^^))
 
 import qualified Data.Semigroup
 import qualified Data.Monoid
@@ -346,9 +349,11 @@ instance (Num a, Ord a) => Num (Interval a) where
   _ - _ = Empty
   {-# INLINE (-) #-}
   I a b * I a' b' =
-    case filter (not . isNaN) [a * a', a * b', b * a', b * b'] of
+    case mapMaybe f [(a, a'), (a, b'), (b, a'), (b, b')] of
       [] -> Empty
       xs -> minimum xs ... maximum xs
+    where
+      f (x1, x2) = let y = x1 * x2 in if y == y then Just y else Nothing
   _ * _ = Empty
   {-# INLINE (*) #-}
   abs x@(I a b)
@@ -681,21 +686,21 @@ instance RealFloat a => RealFloat (Interval a) where
 
   atan2 = error "unimplemented"
 
-  x ^ y | y < 0    = errorWithoutStackTrace "Negative exponent"
-        | y == 0   = (1 ... 1)
-        | even y = intersection (0 ... posInfinity) (f x0 y0)
+x0 ^ y0 | y0 < 0    = errorWithoutStackTrace "Negative exponent"
+        | y0 == 0   = (1 ... 1)
+        | even y0   = intersection (0 ... posInfinity) (f x0 y0)
         | otherwise = f x0 y0
-    where -- f : x0 ^ y0 = x ^ y
-          f x y | even y    = f (x * x) (y `quot` 2)
-                | y == 1    = x
-                | otherwise = g (x * x) (y `quot` 2) x
-          -- g : x0 ^ y0 = (x ^ y) * z
-          g x y z | even y = g (x * x) (y `quot` 2) z
-                  | y == 1 = x * z
-                  | otherwise = g (x * x) (y `quot` 2) (x * z)
+  where -- f : x0 ^ y0 = x ^ y
+        f x y | even y    = f (x * x) (y `quot` 2)
+              | y == 1    = x
+              | otherwise = g (x * x) (y `quot` 2) x
+        -- g : x0 ^ y0 = (x ^ y) * z
+        g x y z | even y = g (x * x) (y `quot` 2) z
+                | y == 1 = x * z
+                | otherwise = g (x * x) (y `quot` 2) (x * z)
 
-  x ^^ y | y < 0 = recip (x ^ negate y)
-         | otherwise = x ^ y
+x ^^ y | y < 0 = recip (x ^ negate y)
+       | otherwise = x ^ y
 
 -- | Calculate the intersection of two intervals.
 --
