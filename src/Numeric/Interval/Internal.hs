@@ -54,7 +54,7 @@ module Numeric.Interval.Internal
   , irem
   , idiv
   , imod
-  , |^|, |^^|
+  , (|^|), (|^^|)
   ) where
 
 import Control.Exception as Exception
