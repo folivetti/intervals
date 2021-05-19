@@ -46,6 +46,7 @@ module Numeric.Interval
   , irem
   , idiv
   , imod
+  , (|^|), (|^^|)
   ) where
 
 import Numeric.Interval.Internal
