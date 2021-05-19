@@ -536,7 +536,8 @@ instance (Fractional a, Ord a) => Fractional (Interval a) where
       iz = a == 0
       sz = b == 0
   recip Empty = Empty
-  recip (I a b)   = on min recip a b ... on max recip a b
+  recip y@(I a b) | 0 `notElem` y = on min recip a b ... on max recip a b
+                  | otherwise = divZero (1 ... 1)
   {-# INLINE recip #-}
   fromRational r  = let r' = fromRational r in I r' r'
   {-# INLINE fromRational #-}
