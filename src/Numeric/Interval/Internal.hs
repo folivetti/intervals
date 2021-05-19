@@ -54,6 +54,7 @@ module Numeric.Interval.Internal
   , irem
   , idiv
   , imod
+  , |^|, |^^|
   ) where
 
 import Control.Exception as Exception
@@ -685,6 +686,7 @@ instance RealFloat a => RealFloat (Interval a) where
 
 -- TODO: (^), (^^) to give tighter bounds
 (|^|) :: (Num a, Ord a, Integral b) => Interval a -> b -> Interval a
+Empty |^| _ = Empty
 y |^| k 
   | k < 0      = error "negative exponent in (a...b)^k"
   | 0 `elem` y = powWithZero y k
@@ -692,6 +694,7 @@ y |^| k
   | y < 0      = powLTZero y k
   
 (|^^|) :: (Fractional a, Ord a, Integral b) => Interval a -> b -> Interval a  
+Empty |^^| _ = Empty
 y |^^| k
   | k < 0 = recip (y |^| (-k))
   | otherwise = y |^^| k
@@ -699,13 +702,16 @@ infixr 8 |^|
 infixr 8 |^^|
 
 powWithZero, powGTZero, powLTZero :: (Num a, Ord a, Integral b) => Interval a -> b -> Interval a
+powWithZero Empty _ = Empty
 powWithZero (I a b) k
   | k == 0 = (0 ... 1)
   | even k = (0 ... max (a^k) (b^k))
   | otherwise = (a^k ... b^k)
+powGTZero Empty _ = Empty  
 powGTZero (I a b) k
   | k == 0 = (1 ... 1)
   | otherwise = (a^k ... b^k)
+powLTZero Empty _ = Empty
 powLTZero (I a b) k
   | k == 0 = (1 ... 1)
   | even k = (b^k ... a^k)
