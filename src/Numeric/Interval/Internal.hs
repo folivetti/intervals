@@ -701,7 +701,7 @@ infixr 8 |^^|
 powWithZero, powGTZero, powLTZero :: (Num a, Integral b) => Interval a -> b -> Interval a
 powWithZero (I a b) k
   | k == 0 = (0 ... 1)
-  | even k = (0 ... max a^k b^k)
+  | even k = (0 ... max (a^k) (b^k))
   | otherwise = (a^k ... b^k)
 powGTZero (I a b) k
   | k == 0 = (1 ... 1)
