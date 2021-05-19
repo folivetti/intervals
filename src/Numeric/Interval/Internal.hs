@@ -684,21 +684,21 @@ instance RealFloat a => RealFloat (Interval a) where
   atan2 = error "unimplemented"
 
 -- TODO: (^), (^^) to give tighter bounds
-(|^|) :: (Num a, Integral b) => Interval a -> b -> Interval a
+(|^|) :: (Num a, Ord a, Integral b) => Interval a -> b -> Interval a
 y |^| k 
   | k < 0      = error "negative exponent in (a...b)^k"
   | 0 `elem` y = powWithZero y k
   | y > 0      = powGTZero y k
   | y < 0      = powLTZero y k
   
-(|^^|) :: (Fractional a, Integral b) => Interval a -> b -> Interval a  
+(|^^|) :: (Fractional a, Ord a, Integral b) => Interval a -> b -> Interval a  
 y |^^| k
   | k < 0 = recip (y |^| (-k))
   | otherwise = y |^^| k
 infixr 8 |^|
 infixr 8 |^^|
 
-powWithZero, powGTZero, powLTZero :: (Num a, Integral b) => Interval a -> b -> Interval a
+powWithZero, powGTZero, powLTZero :: (Num a, Ord a, Integral b) => Interval a -> b -> Interval a
 powWithZero (I a b) k
   | k == 0 = (0 ... 1)
   | even k = (0 ... max (a^k) (b^k))
