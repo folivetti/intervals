@@ -105,6 +105,10 @@ posInfinity :: Fractional a => a
 posInfinity = 1/0
 {-# INLINE posInfinity #-}
 
+nanValue :: Fractional a => a
+nanValue = 0/0
+{-# INLINE nanValue #-}
+
 interval :: Ord a => a -> a -> Maybe (Interval a)
 interval a b
   | a <= b = Just $ I a b
@@ -529,7 +533,7 @@ instance (Fractional a, Ord a) => Fractional (Interval a) where
   _ / Empty = Empty
   x / y@(I a b)
     | 0 `notElem` y = divNonZero x y
-    | iz && sz  = Exception.throw DivideByZero
+    | iz && sz  = nanValue -- Exception.throw DivideByZero
     | iz        = divPositive x b
     |       sz  = divNegative x a
     | otherwise = divZero x
