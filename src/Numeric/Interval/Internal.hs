@@ -703,7 +703,7 @@ y |^| k
 Empty |^^| _ = Empty
 y |^^| k
   | k < 0 = recip (y |^| (-k))
-  | otherwise = y |^^| k
+  | otherwise = y |^| k
 infixr 8 |^|
 infixr 8 |^^|
 
