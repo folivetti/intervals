@@ -594,6 +594,7 @@ instance (RealFloat a, Ord a) => Floating (Interval a) where
   {-# INLINE tan #-}
   asin Empty = Empty
   asin (I a b)
+    | a < -1 || b > 1 = Empty
     | b < -1 || a > 1 = Empty
     | otherwise =
       (if a <= -1 then -halfPi else asin a)
@@ -604,6 +605,7 @@ instance (RealFloat a, Ord a) => Floating (Interval a) where
   {-# INLINE asin #-}
   acos Empty = Empty
   acos (I a b)
+    | a < -1 || b > 1 = Empty
     | b < -1 || a > 1 = Empty
     | otherwise =
       (if b >= 1 then 0 else acos b)
