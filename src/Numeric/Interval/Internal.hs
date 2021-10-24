@@ -643,6 +643,11 @@ instance (RealFloat a, Ord a) => Floating (Interval a) where
       ...
       (if b >= 1 then posInfinity else atanh b)
   {-# INLINE atanh #-}
+  sqrt Empty = Empty
+  sqrt x@(I a b)
+    | a < 0 = Empty
+    | otherwise = x ** (0.5)
+  {-# INLINE sqrt #-}
 
 -- | lift a monotone increasing function over a given interval
 increasing :: (a -> b) -> Interval a -> Interval b
